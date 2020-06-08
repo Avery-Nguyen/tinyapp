@@ -41,12 +41,12 @@ app.get("/urls/:shortURL", (req, res) => { //user request :shortURL and server r
   let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
   res.render("urls_show", templateVars);
 });
-
-app.post("/urls", (req, res) => {
-  console.log(req.body);  // Log the POST request body to the console in js object { longURL: ~longUrl.com~ }
-  res.send("Ok");         // Respond with 'Ok' (we will replace this)
-});
-
 function generateRandomString() { //creates random 6 random alphanumeric characters
  return Math.random().toString(36).slice(2,8);
 }
+
+app.post("/urls", (req, res) => {
+  const shortURL = generateRandomString(); //invokes generateRandomString to create short url
+  urlDatabase[shortURL] = req.body.longURL; // adds shorturl and long url key/values pair to database (urlDatabase object)
+  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+});
