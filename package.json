@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/Avery-Nguyen/tinyapp/issues"
   },
-  "homepage": "https://github.com/Avery-Nguyen/tinyapp#readme"
+  "homepage": "https://github.com/Avery-Nguyen/tinyapp#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
