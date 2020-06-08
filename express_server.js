@@ -1,8 +1,11 @@
 const express = require("express");
-const app = express();
+const app = express(); //invokes express so we can use it
 const PORT = 8080; // default port 8080
 
-app.set("view engine", "ejs");
+app.set("view engine", "ejs"); //sets template engine to be used
+
+const bodyParser = require("body-parser"); //makes client POST request readable
+app.use(bodyParser.urlencoded({extended: true}));
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -30,7 +33,16 @@ app.get("/urls", (req, res) => { //shows table of the url database
   res.render("urls_index", templateVars);
 });
 
+app.get("/urls/new", (req, res) => { 
+  res.render("urls_new");
+});
+
 app.get("/urls/:shortURL", (req, res) => { //user request :shortURL and server returns details page of url
   let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
   res.render("urls_show", templateVars);
+});
+
+app.post("/urls", (req, res) => {
+  console.log(req.body);  // Log the POST request body to the console
+  res.send("Ok");         // Respond with 'Ok' (we will replace this)
 });
