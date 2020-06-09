@@ -40,11 +40,18 @@ app.get("/urls", (req, res) => { //shows table of the url database
 });
 
 app.get("/urls/new", (req, res) => { //creates new url page for client to input url into form
-  res.render("urls_new");
+  let templateVars = { 
+    urls: urlDatabase,
+    username: req.cookies["username"]
+   };
+  res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:shortURL", (req, res) => { //user request :shortURL and server returns details page of url
-  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+  let templateVars = { 
+    shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL],
+    username: req.cookies["username"] 
+  };
   res.render("urls_show", templateVars);
 });
 
