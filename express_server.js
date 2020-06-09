@@ -7,6 +7,8 @@ app.set("view engine", "ejs"); //sets template engine to be used
 const bodyParser = require("body-parser"); //makes client POST request readable (middleware)
 app.use(bodyParser.urlencoded({extended: true}));
 
+const cookieParser = require('cookie-parser'); //middleware for cookies
+
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
