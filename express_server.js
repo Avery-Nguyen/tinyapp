@@ -104,7 +104,7 @@ app.post("/login", (req, res) => { //req.body.username = recieves the username t
 });
 
 app.post("/logout", (req, res) => { //clears the cookie of the username
-  res.clearCookie('username', req.body.username);
+  res.clearCookie('user_id', req.cookies["user_id"]);
   res.redirect("/urls");
 });
 
