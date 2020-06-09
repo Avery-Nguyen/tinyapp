@@ -17,10 +17,10 @@ const urlDatabase = {
 
 const user = {
   "userRandomID": {
-    id: "userRandomID", 
-    email: "user@example.com", 
-    password: "purple-monkey-dinosaur"
-  }
+                    id: "userRandomID", 
+                    email: "user@example.com", 
+                    password: "purple-monkey-dinosaur"
+                  }
 };
 
 app.get("/", (req, res) => { //send client a reponse once they make a request
@@ -42,7 +42,7 @@ app.get("/hello", (req, res) => { //hello page
 app.get("/urls", (req, res) => { //shows table of the url database
   let templateVars = { 
     urls: urlDatabase,
-    username: req.body.user_id
+    user
    };
   res.render("urls_index", templateVars);
 });
@@ -50,7 +50,7 @@ app.get("/urls", (req, res) => { //shows table of the url database
 app.get("/urls/new", (req, res) => { //creates new url page for client to input url into form
   let templateVars = { 
     urls: urlDatabase,
-    username: req.body.user_id
+    user
    };
   res.render("urls_new", templateVars);
 });
@@ -59,7 +59,7 @@ app.get("/urls/new", (req, res) => { //creates new url page for client to input 
 app.get("/urls/:shortURL", (req, res) => { //user request :shortURL and server returns details page of url
   let templateVars = { 
     shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL],
-    username: req.body.user_id
+    user
   };
   res.render("urls_show", templateVars);
 });
@@ -103,12 +103,12 @@ app.post("/logout", (req, res) => { //clears the cookie of the username
 
 app.get("/register", (req, res) => {  //send client to register page
   let templateVars = { 
-    username: user
+    user
    };
   res.render('urls_register', templateVars);
 });
 
-app.post("/register", (req, res) => {
+app.post("/register", (req, res) => { //creates new user object with cookie
   const randID = generateRandomString();
   user[randID] = {
     id: randID,
@@ -116,6 +116,7 @@ app.post("/register", (req, res) => {
     password: req.body.password
   };
   res.cookie('user_id', randID);
+  
   res.redirect("/urls");
-  console.log(req.body.user_id);
+  // console.log(req.cookies["user_id"]); // = randID
 });
