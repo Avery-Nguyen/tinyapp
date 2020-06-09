@@ -4,7 +4,7 @@ const PORT = 8080; // default port 8080
 
 app.set("view engine", "ejs"); //sets template engine to be used
 
-const bodyParser = require("body-parser"); //makes client POST request readable
+const bodyParser = require("body-parser"); //makes client POST request readable (middleware)
 app.use(bodyParser.urlencoded({extended: true}));
 
 const urlDatabase = {
