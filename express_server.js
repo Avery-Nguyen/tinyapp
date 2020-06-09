@@ -23,6 +23,15 @@ const users = {
                   }
 };
 
+const emailMatch = function(obj, email) {
+  for(const user in obj){
+    if (obj[user].email === email){
+      return true;
+    } else {
+      return false;
+    }
+  }
+};
 
 app.get("/", (req, res) => { //send client a reponse once they make a request
   res.send("Hello!");
@@ -119,12 +128,19 @@ app.get("/register", (req, res) => {  //send client to register page
 
 app.post("/register", (req, res) => { //creates new user object with cookie
   const randID = generateRandomString();
-  users[randID] = {
-    id: randID,
-    email: req.body.email,
-    password: req.body.password
-  };
-  res.cookie('user_id', randID);
-  res.redirect("/urls");
+  if (req.body.email === "" || req.body.password === ""){
+    res.redirect(400, "/urls");
+  } else if (emailMatch(users, req.body.email)){
+    res.redirect(400, "/urls");
+  } else {
+    users[randID] = {
+      id: randID,
+      email: req.body.email,
+      password: req.body.password
+    };
+    res.cookie('user_id', randID);
+    res.redirect("/urls");
+  }
+  console.log(users);
   // console.log(req.cookies["user_id"]); // = randID
 });
