@@ -8,6 +8,7 @@ const bodyParser = require("body-parser"); //makes client POST request readable 
 app.use(bodyParser.urlencoded({extended: true}));
 
 const cookieParser = require('cookie-parser'); //middleware for cookies
+app.use(cookieParser());
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -31,7 +32,10 @@ app.get("/hello", (req, res) => { //hello page
 });
 
 app.get("/urls", (req, res) => { //shows table of the url database
-  let templateVars = { urls: urlDatabase };
+  let templateVars = { 
+    urls: urlDatabase,
+    username: req.cookies["username"]
+   };
   res.render("urls_index", templateVars);
 });
 
@@ -69,6 +73,14 @@ app.post("/urls/:shortURL/edit", (req, res) => { //edits the long URL to a diffe
   res.redirect("/urls");
 });
 
-app.post("/urls/login", (req, res) => { //edits the long URL to a different URL when client clicks edit
-  console.log(req.body.username);
+app.post("/login", (req, res) => { //req.body.username = recieves the username the client submitted
+  // console.log(req.body.username);
+  res.cookie('username', req.body.username); 
+  // console.log(req.cookies["username"]); // value = avery
+  res.redirect("/urls");
+});
+
+app.post("/logout", (req, res) => { //clears the cookie of the username
+  res.clearCookie('username', req.body.username);
+  res.redirect("/urls");
 });
