@@ -47,6 +47,7 @@ app.get("/urls/new", (req, res) => { //creates new url page for client to input 
   res.render("urls_new", templateVars);
 });
 
+
 app.get("/urls/:shortURL", (req, res) => { //user request :shortURL and server returns details page of url
   let templateVars = { 
     shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL],
@@ -61,7 +62,7 @@ app.get("/u/:shortURL", (req, res) => { //redirects to the website that they sho
 });
 
 function generateRandomString() { //creates random 6 random alphanumeric characters
- return Math.random().toString(36).slice(2,8);
+  return Math.random().toString(36).slice(2,8);
 }
 
 app.post("/urls", (req, res) => {
@@ -90,4 +91,8 @@ app.post("/login", (req, res) => { //req.body.username = recieves the username t
 app.post("/logout", (req, res) => { //clears the cookie of the username
   res.clearCookie('username', req.body.username);
   res.redirect("/urls");
+});
+
+app.get("/register", (req, res) => {
+  res.render('urls_register');
 });
