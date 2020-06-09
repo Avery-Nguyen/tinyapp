@@ -27,10 +27,9 @@ const emailMatch = function(obj, email) {
   for(const user in obj){
     if (obj[user].email === email){
       return true;
-    } else {
-      return false;
-    }
+    } 
   }
+  return false
 };
 
 app.get("/", (req, res) => { //send client a reponse once they make a request
@@ -50,7 +49,7 @@ app.get("/hello", (req, res) => { //hello page
 });
 
 app.get("/urls", (req, res) => { //shows table of the url database
-  const account = users[req.cookies["user_id"]];
+  const account = users[req.cookies["user_id"]]; //checks to see if client exist in array, if so shows the login header
   let templateVars = { 
     urls: urlDatabase,
     users,
@@ -71,7 +70,7 @@ app.get("/urls/new", (req, res) => { //creates new url page for client to input 
 
 
 app.get("/urls/:shortURL", (req, res) => { //user request :shortURL and server returns details page of url
-  const account = users[req.cookies["user_id"]];
+  const account = users[req.cookies["user_id"]]; 
   let templateVars = { 
     shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL],
     users,
@@ -141,6 +140,5 @@ app.post("/register", (req, res) => { //creates new user object with cookie
     res.cookie('user_id', randID);
     res.redirect("/urls");
   }
-  console.log(users);
   // console.log(req.cookies["user_id"]); // = randID
 });
