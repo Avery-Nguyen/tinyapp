@@ -56,3 +56,8 @@ app.post("/urls", (req, res) => {
   urlDatabase[shortURL] = req.body.longURL; // adds shorturl and long url key/values pair to database (urlDatabase object)
   res.redirect(`/urls/:${shortURL}`);         //redirects client to new page
 });
+
+app.post("/urls/:shortURL/delete", (req, res) => {
+  delete urlDatabase[req.params.shortURL];
+  res.redirect("/urls");
+});
