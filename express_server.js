@@ -66,3 +66,7 @@ app.post("/urls/:shortURL/edit", (req, res) => { //edits the long URL to a diffe
   urlDatabase[req.params.shortURL] = req.body.longURL
   res.redirect("/urls");
 });
+
+app.post("/urls/login", (req, res) => { //edits the long URL to a different URL when client clicks edit
+  console.log(req.body.username);
+});
