@@ -132,7 +132,7 @@ app.post("/login", (req, res) => { //checks login information to see if it match
   
 });
 
-app.post("/logout", (req, res) => { //clears the cookie of the username
+app.post("/logout", (req, res) => { //clears the cookie of the user_id
   res.clearCookie('user_id', req.cookies["user_id"]);
   res.redirect("/login");
 });
