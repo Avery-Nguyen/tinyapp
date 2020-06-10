@@ -128,8 +128,6 @@ app.get("/urls/:shortURL", (req, res) => { //user request :shortURL and server r
 } else {
   return res.status(400).send("do not have access"); //error message
 }
-
-
 });
 
 app.get("/register", (req, res) => {  //send client to register page
@@ -189,7 +187,7 @@ app.post("/login", (req, res) => { //checks login information to see if it match
 
 app.post("/logout", (req, res) => { //clears the cookie of the user_id
   res.clearCookie('user_id', req.cookies["user_id"]);
-  res.redirect("/login");
+  res.redirect("/urls");
 });
 
 
