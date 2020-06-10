@@ -76,6 +76,7 @@ app.get("/urls", (req, res) => { //shows table of the url database
 });
 
 app.get("/urls/new", (req, res) => { //creates new url page for client to input url into form
+  if (req.cookies["user_id"]) {
   const account = users[req.cookies["user_id"]];
   let templateVars = { 
     urls: urlDatabase,
@@ -83,6 +84,9 @@ app.get("/urls/new", (req, res) => { //creates new url page for client to input 
     account
    };
   res.render("urls_new", templateVars);
+  } else {
+    res.redirect("/login");
+  }
 });
 
 
