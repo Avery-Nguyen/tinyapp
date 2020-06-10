@@ -11,8 +11,8 @@ const cookieParser = require('cookie-parser'); //middleware for cookies
 app.use(cookieParser());
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": {longURL: "http://www.lighthouselabs.ca", userID: 'userRandomID'},
+  "9sm5xK": {longURL: "http://www.google.com", userID: 'userRandomID' }
 };
 
 const users = {
@@ -93,7 +93,7 @@ app.get("/urls/new", (req, res) => { //creates new url page for client to input 
 app.get("/urls/:shortURL", (req, res) => { //user request :shortURL and server returns details page of url
   const account = users[req.cookies["user_id"]]; 
   let templateVars = { 
-    shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL],
+    shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL,
     users,
     account
   };
@@ -101,16 +101,20 @@ app.get("/urls/:shortURL", (req, res) => { //user request :shortURL and server r
 });
 
 app.get("/u/:shortURL", (req, res) => { //redirects to the website that they shorten the url for
-  res.redirect(urlDatabase[req.params.shortURL]);
+  res.redirect(urlDatabase[req.params.shortURL].longURL);
 });
 
 function generateRandomString() { //creates random 6 random alphanumeric characters
   return Math.random().toString(36).slice(2,8);
 }
 
-app.post("/urls", (req, res) => {
-  const shortURL = generateRandomString(); //invokes generateRandomString to create short url
-  urlDatabase[shortURL] = req.body.longURL; // adds shorturl and long url key/values pair to database (urlDatabase object)
+app.post("/urls", (req, res) => { //adds new url to database, userID specific
+  const shortURL = generateRandomString(); 
+  urlDatabase[shortURL] = {
+    longURL:req.body.longURL,
+    userID: req.cookies["user_id"]
+   }; 
+  //  console.log(urlDatabase);
   res.redirect(`/urls/${shortURL}`);         //redirects client to new page
 });
 
