@@ -41,6 +41,14 @@ const passwordMatch = function(obj, password) {
   return false
 };
 
+const idFinder = function (obj, email){
+  for(const user in obj){
+    if (obj[user].email === email){
+      return obj[user].id
+    } 
+  }
+};
+
 app.get("/", (req, res) => { //send client a reponse once they make a request
   res.send("Hello!");
 });
@@ -114,8 +122,9 @@ app.post("/urls/:shortURL/edit", (req, res) => { //edits the long URL to a diffe
 });
 
 app.post("/login", (req, res) => { //checks login information to see if it matches user object
-  if(emailMatch(users, req.body.email) && passwordMatch(user,req.body.password)) {
-    res.cookie('user_id', ); 
+  if(emailMatch(users, req.body.email) && passwordMatch(users,req.body.password)) {
+    const id = idFinder(users, req.body.email);
+    res.cookie('user_id', id); 
     res.redirect("/urls");
   } else {
     res.redirect(400, "/login")
@@ -125,7 +134,7 @@ app.post("/login", (req, res) => { //checks login information to see if it match
 
 app.post("/logout", (req, res) => { //clears the cookie of the username
   res.clearCookie('user_id', req.cookies["user_id"]);
-  res.redirect("/urls");
+  res.redirect("/login");
 });
 
 app.get("/register", (req, res) => {  //send client to register page
