@@ -32,6 +32,15 @@ const emailMatch = function(obj, email) {
   return false
 };
 
+const passwordMatch = function(obj, password) {
+  for(const user in obj){
+    if (obj[user].password === password){
+      return true;
+    } 
+  }
+  return false
+};
+
 app.get("/", (req, res) => { //send client a reponse once they make a request
   res.send("Hello!");
 });
@@ -104,11 +113,14 @@ app.post("/urls/:shortURL/edit", (req, res) => { //edits the long URL to a diffe
   res.redirect("/urls");
 });
 
-app.post("/login", (req, res) => { //req.body.username = recieves the username the client submitted
-  // console.log(req.body.username);
-  res.cookie('username', req.body.username); 
-  // console.log(req.cookies["username"]); // value = avery
-  res.redirect("/urls");
+app.post("/login", (req, res) => { //checks login information to see if it matches user object
+  if(emailMatch(users, req.body.email) && passwordMatch(user,req.body.password)) {
+    res.cookie('user_id', ); 
+    res.redirect("/urls");
+  } else {
+    res.redirect(400, "/login")
+  }
+  
 });
 
 app.post("/logout", (req, res) => { //clears the cookie of the username
