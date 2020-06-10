@@ -208,6 +208,7 @@ app.post("/register", (req, res) => { //creates new user object with cookie
     res.cookie('user_id', randID);
     res.redirect("/urls");
   }
+  // console.log(users);
   // console.log(req.cookies["user_id"]); // = randID
 });
 
