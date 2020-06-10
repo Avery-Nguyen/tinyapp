@@ -10,6 +10,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 const cookieParser = require('cookie-parser'); //middleware for cookies
 app.use(cookieParser());
 
+const bcrypt = require('bcrypt');
+
 const urlDatabase = {
   "b2xVn2": {longURL: "http://www.lighthouselabs.ca", userID: 'userRandomID'},
   "9sm5xK": {longURL: "http://www.google.com", userID: 'AVERY' }
@@ -48,13 +50,12 @@ const emailMatch = function(obj, email) { //return true if email matches user da
   return false;
 };
 
-const passwordMatch = function(obj, password) { //returns true if password matches user database
+const passwordMatch = function(obj, email) { //returns true if password matches user database
   for (const user in obj) {
-    if (obj[user].password === password) {
-      return true;
+    if (obj[user].email === email) {
+      return obj[user].password;
     }
   }
-  return false;
 };
 
 const idFinder = function(obj, email) {
@@ -175,7 +176,7 @@ app.post("/urls/:shortURL/edit", (req, res) => { //edits the long URL to a diffe
 });
 
 app.post("/login", (req, res) => { //checks login information to see if it matches user object
-  if (emailMatch(users, req.body.email) && passwordMatch(users,req.body.password)) {
+  if (emailMatch(users, req.body.email) && bcrypt.compareSync(req.body.password, passwordMatch(users, req.body.email))) {
     const id = idFinder(users, req.body.email);
     res.cookie('user_id', id);
     res.redirect("/urls");
@@ -198,10 +199,11 @@ app.post("/register", (req, res) => { //creates new user object with cookie
   } else if (emailMatch(users, req.body.email)) {
     res.redirect(400, "/login"); //error message
   } else {
+    const hashedPassword = bcrypt.hashSync(req.body.password, 10);
     users[randID] = {
       id: randID,
       email: req.body.email,
-      password: req.body.password
+      password: hashedPassword
     };
     res.cookie('user_id', randID);
     res.redirect("/urls");
