@@ -107,7 +107,7 @@ function generateRandomString() { //creates random 6 random alphanumeric charact
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString(); //invokes generateRandomString to create short url
   urlDatabase[shortURL] = req.body.longURL; // adds shorturl and long url key/values pair to database (urlDatabase object)
-  res.redirect(`/urls/:${shortURL}`);         //redirects client to new page
+  res.redirect(`/urls/${shortURL}`);         //redirects client to new page
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => { //deletes from database when client clicks button
