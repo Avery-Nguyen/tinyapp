@@ -65,12 +65,12 @@ const idFinder = function(obj, email) {
   }
 };
 
-app.get("/", (req, res) => { //send client a reponse once they make a request
-  res.send("Hello!");
-});
-
 app.listen(PORT, () => { //lets us know that the server is on
   console.log(`Example app listening on port ${PORT}!`);
+});
+
+app.get("/", (req, res) => { //send client a reponse once they make a request
+  res.send("Hello!");
 });
 
 app.get("/urls.json", (req, res) => { //send json of the url database
@@ -114,7 +114,7 @@ app.get("/urls/new", (req, res) => { //creates new url page for client to input 
 
 app.get("/urls/:shortURL", (req, res) => { //user request :shortURL and server returns details page of url
   if(!req.cookies["user_id"]) {
-    return res.status(400).send("please login");
+    return res.status(400).send("please login"); //error message
   };
   
   if (req.cookies["user_id"] === urlDatabase[req.params.shortURL].userID) {
@@ -126,10 +126,23 @@ app.get("/urls/:shortURL", (req, res) => { //user request :shortURL and server r
   };
    return res.render("urls_show", templateVars);
 } else {
-  return res.status(400).send("do not have access");
+  return res.status(400).send("do not have access"); //error message
 }
 
 
+});
+
+app.get("/register", (req, res) => {  //send client to register page
+  const account = users[req.cookies["user_id"]];
+  let templateVars = {
+    users,
+    account
+  };
+  res.render('urls_register', templateVars);
+});
+
+app.get('/login', (req, res) => {
+  res.render('urls_login');
 });
 
 app.get("/u/:shortURL", (req, res) => { //redirects to the website that they shorten the url for
@@ -148,13 +161,19 @@ app.post("/urls", (req, res) => { //adds new url to database, userID specific
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => { //deletes from database when client clicks button
+  if (req.cookies["user_id"] === urlDatabase[req.params.shortURL].userID) {
   delete urlDatabase[req.params.shortURL];
-  res.redirect("/urls");
+  return res.redirect("/urls");
+  }
+  return res.status(400).send("cannot delete"); //error message
 });
 
 app.post("/urls/:shortURL/edit", (req, res) => { //edits the long URL to a different URL when client clicks edit
+  if (req.cookies["user_id"] === urlDatabase[req.params.shortURL].userID) {
   urlDatabase[req.params.shortURL] = req.body.longURL;
-  res.redirect("/urls");
+  return res.redirect("/urls");
+  }
+  return res.status(400).send("cannot edit"); //error message
 });
 
 app.post("/login", (req, res) => { //checks login information to see if it matches user object
@@ -163,7 +182,7 @@ app.post("/login", (req, res) => { //checks login information to see if it match
     res.cookie('user_id', id);
     res.redirect("/urls");
   } else {
-    res.redirect(400, "/login");
+    res.redirect(400, "/login"); //error message
   }
   
 });
@@ -173,21 +192,13 @@ app.post("/logout", (req, res) => { //clears the cookie of the user_id
   res.redirect("/login");
 });
 
-app.get("/register", (req, res) => {  //send client to register page
-  const account = users[req.cookies["user_id"]];
-  let templateVars = {
-    users,
-    account
-  };
-  res.render('urls_register', templateVars);
-});
 
 app.post("/register", (req, res) => { //creates new user object with cookie
   const randID = generateRandomString();
   if (req.body.email === "" || req.body.password === "") {
-    res.redirect(400, "/urls");
+    res.redirect(400, "/login"); //error message
   } else if (emailMatch(users, req.body.email)) {
-    res.redirect(400, "/urls");
+    res.redirect(400, "/login"); //error message
   } else {
     users[randID] = {
       id: randID,
@@ -200,6 +211,4 @@ app.post("/register", (req, res) => { //creates new user object with cookie
   // console.log(req.cookies["user_id"]); // = randID
 });
 
-app.get('/login', (req, res) => {
-  res.render('urls_login');
-});
+
