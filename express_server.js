@@ -12,7 +12,7 @@ app.use(cookieParser());
 
 const urlDatabase = {
   "b2xVn2": {longURL: "http://www.lighthouselabs.ca", userID: 'userRandomID'},
-  "9sm5xK": {longURL: "http://www.google.com", userID: 'userRandomID' }
+  "9sm5xK": {longURL: "http://www.google.com", userID: 'AVERY' }
 };
 
 const users = {
@@ -113,13 +113,23 @@ app.get("/urls/new", (req, res) => { //creates new url page for client to input 
 
 
 app.get("/urls/:shortURL", (req, res) => { //user request :shortURL and server returns details page of url
+  if(!req.cookies["user_id"]) {
+    return res.status(400).send("please login");
+  };
+  
+  if (req.cookies["user_id"] === urlDatabase[req.params.shortURL].userID) {
   const account = users[req.cookies["user_id"]];
   let templateVars = {
     shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL,
     users,
     account
   };
-  res.render("urls_show", templateVars);
+   return res.render("urls_show", templateVars);
+} else {
+  return res.status(400).send("do not have access");
+}
+
+
 });
 
 app.get("/u/:shortURL", (req, res) => { //redirects to the website that they shorten the url for
