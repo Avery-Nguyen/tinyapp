@@ -23,7 +23,7 @@ const users = {
                   }
 };
 
-const emailMatch = function(obj, email) {
+const emailMatch = function(obj, email) { //return true if email matches user database
   for(const user in obj){
     if (obj[user].email === email){
       return true;
@@ -32,7 +32,7 @@ const emailMatch = function(obj, email) {
   return false
 };
 
-const passwordMatch = function(obj, password) {
+const passwordMatch = function(obj, password) { //returns true if password matches user database
   for(const user in obj){
     if (obj[user].password === password){
       return true;
@@ -97,7 +97,6 @@ app.get("/urls/:shortURL", (req, res) => { //user request :shortURL and server r
 });
 
 app.get("/u/:shortURL", (req, res) => { //redirects to the website that they shorten the url for
-  // const longURL = ...
   res.redirect(urlDatabase[req.params.shortURL]);
 });
 
