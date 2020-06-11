@@ -1,7 +1,7 @@
 const express = require("express");
-const app = express(); //invokes express so we can use it
-const PORT = 8080; // default port 8080
-
+const app = express(); 
+const PORT = 8080; 
+const saltRound = 10;
 app.set("view engine", "ejs"); //sets template engine to be used
 
 const bodyParser = require("body-parser"); //makes client POST request readable (middleware)
@@ -11,7 +11,6 @@ const cookieSession = require('cookie-session') //middleware for Encypt cookies
 app.use(cookieSession({
   name: 'session',
   keys: ['key1', 'key2'],
-
   // Cookie Options
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }))
@@ -44,7 +43,7 @@ app.get("/", (req, res) => {
   return res.redirect('/login');
 });
 
-app.get("/urls", (req, res) => { //shows table of the url database based on user_id
+app.get("/urls", (req, res) => { //shows main page based on user_id
   if (req.session.user_id) {
     const account = users[req.session.user_id]; //checks to see if client exist in array, if so shows the login header
     const userURL = findData(urlDatabase, req.session.user_id)
@@ -143,18 +142,26 @@ app.post("/urls/:shortURL", (req, res) => { //edits the long URL to a different 
 });
 
 app.post("/login", (req, res) => { //checks login information to see if it matches user object
-  if (emailMatch(users, req.body.email) && bcrypt.compareSync(req.body.password, passwordMatch(users, req.body.email))) {
-    const id = idFinder(users, req.body.email);
-    req.session.user_id = id;
-    res.redirect("/urls");
-  } else {
-    res.redirect(400, "/login"); //error message
-  }
-  
+  const userPassword = passwordMatch(users, req.body.email);
+  const inputPassword = req.body.password
+  const inputEmail = req.body.email
+  if(emailMatch(users, inputEmail)){
+    bcrypt.compare(inputPassword, userPassword, function(err, result) {
+      if (result) {
+        const id = idFinder(users, inputEmail);
+        req.session.user_id = id;
+        res.redirect("/urls");
+      } else {
+        res.redirect(400, "/login"); //error message
+      }
+    });
+    } else {
+      res.redirect(400, "/login"); //error message
+    }
 });
 
 app.post("/logout", (req, res) => { //clears the cookie of the user_id
-  res.clearCookie('session');
+  req.session.user_id = null;
   res.redirect("/urls");
 });
 
@@ -166,14 +173,15 @@ app.post("/register", (req, res) => { //creates new user object with cookie
   } else if (emailMatch(users, req.body.email)) {
     res.redirect(400, "/login"); //error message
   } else {
-    const hashedPassword = bcrypt.hashSync(req.body.password, 10);
-    users[randID] = {
-      id: randID,
-      email: req.body.email,
-      password: hashedPassword
-    };
-    req.session.user_id = randID;
-    res.redirect("/urls");
+    bcrypt.hash(req.body.password, saltRound, (err, hash) => {
+      users[randID] = {
+          id: randID,
+          email: req.body.email,
+          password: hash
+        };
+        req.session.user_id = randID;
+        res.redirect("/urls");
+    });
   }
 });
 
