@@ -38,6 +38,17 @@ describe('passwordMatch', () => {
     const expected = "purple-monkey-dinosaur";
     assert.equal(actual, expected);
   });
+
+  it('should return undefined when no match is found', () => {
+    const actual = passwordMatch(testUsers, "user123@example.com");
+    
+    assert.isUndefined(actual)
+  });
+
+  it('should return undefined when email is an empty string', () => {
+    const actual = passwordMatch(testUsers, "");
+    assert.isUndefined(actual)
+  });
 });
 
 describe('idFinder', () => {
@@ -46,4 +57,21 @@ describe('idFinder', () => {
     const expected = 'userRandomID';
     assert.equal(actual, expected);
   });
+
+  it('should return undefined if no match is found', () => {
+    const actual = idFinder(testUsers, "user123@example.com");
+    assert.isUndefined(actual)
+  });
+
+  it('should return undefined if no match is found', () => {
+    const actual = idFinder(testUsers, "");
+    assert.isUndefined(actual)
+  });
+});
+
+describe('findData', () => {
+  it('should return the user longURL and id in an object', () => {
+    //add function
+  });
+
 });

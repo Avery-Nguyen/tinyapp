@@ -27,4 +27,16 @@ const idFinder = function(obj, email) {
   }
 };
 
-module.exports = { generateRandomString, emailMatch, passwordMatch, idFinder }
+const findData = function (obj, id) {
+  let userURL = {};
+  for (const url in obj) {
+    if (obj[url].userID === id){
+      userURL[url] = {
+        longURL: obj[url].longURL, 
+        userID: obj[url].userID
+      }
+    }
+  }
+  return userURL;
+};
+module.exports = { generateRandomString, emailMatch, passwordMatch, idFinder, findData }

@@ -18,7 +18,7 @@ app.use(cookieSession({
 
 const bcrypt = require('bcrypt'); //encrypt password 
 
-const { generateRandomString, emailMatch, passwordMatch, idFinder } = require('./helpers'); //helper functions
+const { generateRandomString, emailMatch, passwordMatch, idFinder, findData } = require('./helpers'); //helper functions
 
 const urlDatabase = {
   "b2xVn2": {longURL: "http://www.lighthouselabs.ca", userID: 'userRandomID'},
@@ -29,37 +29,19 @@ const users = {
   "userRandomID": {
     id: "userRandomID",
     email: "user@example.com",
-    password: "1234"
+    password: bcrypt.hashSync("1234", 10)
   }
 };
-const findData = function (obj, id) {
-  let userURL = {};
-  for (const url in obj) {
-    if (obj[url].userID === id){
-      userURL[url] = {
-        longURL: obj[url].longURL, 
-        userID: obj[url].userID
-      }
-    }
-  }
-  return userURL;
-};
-
 
 app.listen(PORT, () => { //lets us know that the server is on
   console.log(`Example app listening on port ${PORT}!`);
 });
 
-app.get("/", (req, res) => { //send client a reponse once they make a request
-  res.send("Hello!");
-});
-
-app.get("/urls.json", (req, res) => { //send json of the url database
-  res.json(urlDatabase);
-});
-
-app.get("/hello", (req, res) => { //hello page
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
+app.get("/", (req, res) => { 
+  if (req.session.user_id){
+    return res.redirect('/urls');
+  }
+  return res.redirect('/login');
 });
 
 app.get("/urls", (req, res) => { //shows table of the url database based on user_id
@@ -71,16 +53,14 @@ app.get("/urls", (req, res) => { //shows table of the url database based on user
       users,
       account
     };
-    res.render("urls_index", templateVars);
-  } else {
-  res.redirect("/login");
-  }
+    return res.render("urls_index", templateVars);
+  } 
+  return res.redirect("/login");
 });
 
 app.get("/urls/new", (req, res) => { //creates new url page for client to input url into form
   if (req.session.user_id) {
     const account = users[req.session.user_id];
-    
     let templateVars = {
       urls: urlDatabase,
       users,
@@ -95,9 +75,11 @@ app.get("/urls/new", (req, res) => { //creates new url page for client to input 
 
 app.get("/urls/:shortURL", (req, res) => { //user request :shortURL and server returns details page of url
   if(!req.session.user_id) {
-    return res.status(400).send("please login"); //error message
+    return res.status(400).send("Please Login"); //error message
   };
-  
+  if(!urlDatabase[req.params.shortURL]) {
+    return res.status(400).send("URL Does Not Exist"); //error message
+  }
   if (req.session.user_id === urlDatabase[req.params.shortURL].userID) {
   const account = users[req.session.user_id];
   let templateVars = {
@@ -106,9 +88,9 @@ app.get("/urls/:shortURL", (req, res) => { //user request :shortURL and server r
     account
   };
    return res.render("urls_show", templateVars);
-} else {
-  return res.status(400).send("do not have access"); //error message
-}
+} 
+  return res.status(401).send("Do Not Have Access"); //error message
+
 });
 
 app.get("/register", (req, res) => {  //send client to register page
@@ -125,7 +107,10 @@ app.get('/login', (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => { //redirects to the website that they shorten the url for
-  res.redirect(urlDatabase[req.params.shortURL].longURL);
+  if(!urlDatabase[req.params.shortURL]){
+    return res.status(400).send("URL does not exist"); //error message
+  }
+  return res.redirect(urlDatabase[req.params.shortURL].longURL);
 });
 
 
@@ -135,7 +120,6 @@ app.post("/urls", (req, res) => { //adds new url to database, userID specific
     longURL:req.body.longURL,
     userID: req.session.user_id
   };
-  //  console.log(urlDatabase);
   res.redirect(`/urls/${shortURL}`);         //redirects client to new page
 });
 
@@ -144,7 +128,7 @@ app.post("/urls/:shortURL/delete", (req, res) => { //deletes from database when 
   delete urlDatabase[req.params.shortURL];
   return res.redirect("/urls");
   }
-  return res.status(400).send("cannot delete"); //error message
+  return res.status(401).send("cannot delete"); //error message
 });
 
 app.post("/urls/:shortURL/edit", (req, res) => { //edits the long URL to a different URL when client clicks edit
@@ -152,7 +136,7 @@ app.post("/urls/:shortURL/edit", (req, res) => { //edits the long URL to a diffe
   urlDatabase[req.params.shortURL] = req.body.longURL;
   return res.redirect("/urls");
   }
-  return res.status(400).send("cannot edit"); //error message
+  return res.status(401).send("cannot edit"); //error message
 });
 
 app.post("/login", (req, res) => { //checks login information to see if it matches user object
@@ -188,8 +172,6 @@ app.post("/register", (req, res) => { //creates new user object with cookie
     req.session.user_id = randID;
     res.redirect("/urls");
   }
-  // console.log(users);
-  // console.log(req.cookies["user_id"]); // = randID
 });
 
 
