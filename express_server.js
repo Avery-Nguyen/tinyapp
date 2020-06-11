@@ -74,7 +74,7 @@ app.get("/urls/:shortURL", (req, res) => { //user request :shortURL and server r
     return res.status(400).send("Please Login"); //error message
   }
   if (!urlDatabase[req.params.shortURL]) {
-    return res.status(400).send("URL Does Not Exist"); //error message
+    return res.status(404).send("URL Does Not Exist"); //error message
   }
   if (req.session.user_id === urlDatabase[req.params.shortURL].userID) {
     const account = users[req.session.user_id];
@@ -104,7 +104,7 @@ app.get('/login', (req, res) => {
 
 app.get("/u/:shortURL", (req, res) => { //redirects to the website that they shorten the url for
   if (!urlDatabase[req.params.shortURL]) {
-    return res.status(400).send("URL Does Not Exist"); //error message
+    return res.status(404).send("URL Does Not Exist"); //error message
   }
   return res.redirect(urlDatabase[req.params.shortURL].longURL);
 });
