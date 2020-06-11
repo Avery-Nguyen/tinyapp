@@ -33,7 +33,8 @@ const findData = function (obj, id) {
     if (obj[url].userID === id){
       userURL[url] = {
         longURL: obj[url].longURL, 
-        userID: obj[url].userID
+        userID: obj[url].userID,
+        date: obj[url].date
       }
     }
   }

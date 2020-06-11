@@ -20,7 +20,7 @@ const bcrypt = require('bcrypt'); //encrypt password
 const { generateRandomString, emailMatch, passwordMatch, idFinder, findData } = require('./helpers'); //helper functions
 
 const urlDatabase = {
-  "b2xVn2": {longURL: "http://www.lighthouselabs.ca", userID: 'userRandomID'},
+  "b2xVn2": {longURL: "http://www.lighthouselabs.ca", userID: 'userRandomID', date: '2000/3/9'},
   "9sm5xK": {longURL: "http://www.google.com", userID: 'AVERY' }
 };
 
@@ -115,9 +115,14 @@ app.get("/u/:shortURL", (req, res) => { //redirects to the website that they sho
 
 app.post("/urls", (req, res) => { //adds new url to database, userID specific
   const shortURL = generateRandomString();
+  const dateObj = new Date();
+  const month = dateObj.getUTCMonth() + 1; //months from 1-12
+  const day = dateObj.getUTCDate();
+  const year = dateObj.getUTCFullYear();
   urlDatabase[shortURL] = {
     longURL:req.body.longURL,
-    userID: req.session.user_id
+    userID: req.session.user_id,
+    date: `${year}/${month}/${day}`
   };
   res.redirect(`/urls/${shortURL}`);         //redirects client to new page
 });
