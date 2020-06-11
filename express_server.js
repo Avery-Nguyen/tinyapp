@@ -108,7 +108,7 @@ app.get('/login', (req, res) => {
 
 app.get("/u/:shortURL", (req, res) => { //redirects to the website that they shorten the url for
   if(!urlDatabase[req.params.shortURL]){
-    return res.status(400).send("URL does not exist"); //error message
+    return res.status(400).send("URL Does Not Exist"); //error message
   }
   return res.redirect(urlDatabase[req.params.shortURL].longURL);
 });
@@ -128,15 +128,18 @@ app.post("/urls/:shortURL/delete", (req, res) => { //deletes from database when 
   delete urlDatabase[req.params.shortURL];
   return res.redirect("/urls");
   }
-  return res.status(401).send("cannot delete"); //error message
+  return res.status(401).send("Unauthorized"); //error message
 });
 
-app.post("/urls/:shortURL/edit", (req, res) => { //edits the long URL to a different URL when client clicks edit
+app.post("/urls/:shortURL", (req, res) => { //edits the long URL to a different URL when client clicks edit
   if (req.session.user_id === urlDatabase[req.params.shortURL].userID) {
-  urlDatabase[req.params.shortURL] = req.body.longURL;
+    urlDatabase[req.params.shortURL] = {
+      longURL:req.body.longURL,
+      userID: req.session.user_id
+    };
   return res.redirect("/urls");
   }
-  return res.status(401).send("cannot edit"); //error message
+  return res.status(401).send("Unauthorized"); //error message
 });
 
 app.post("/login", (req, res) => { //checks login information to see if it matches user object

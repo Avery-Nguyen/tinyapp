@@ -1,6 +1,6 @@
 const { assert } = require('chai');
 
-const { emailMatch, passwordMatch, idFinder } = require('../helpers');
+const { emailMatch, passwordMatch, idFinder, findData } = require('../helpers');
 
 const testUsers = {
   "userRandomID": {
@@ -13,6 +13,11 @@ const testUsers = {
     email: "user2@example.com", 
     password: "dishwasher-funk"
   }
+};
+
+const urlDatabase = {
+  "b2xVn2": {longURL: "http://www.lighthouselabs.ca", userID: 'userRandomID'},
+  "9sm5xK": {longURL: "http://www.google.com", userID: 'AVERY' }
 };
 
 describe('emailMatch', function() {
@@ -71,7 +76,15 @@ describe('idFinder', () => {
 
 describe('findData', () => {
   it('should return the user longURL and id in an object', () => {
-    //add function
+    const actual = findData(urlDatabase, 'userRandomID');
+    const expected = {"b2xVn2": {longURL: "http://www.lighthouselabs.ca", userID: 'userRandomID'}};
+    assert.deepEqual(actual, expected);
+  });
+
+  it('should return an empty object if user id is not found', () => {
+    const actual = findData(urlDatabase, 'userRandomIDsada');
+    const expected = {};
+    assert.deepEqual(actual, expected);
   });
 
 });
